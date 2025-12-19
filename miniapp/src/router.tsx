@@ -11,7 +11,7 @@ export function AppRouter() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Welcome />} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/pay" element={<Pay />} />
         <Route path="/success" element={<Success />} />
         <Route path="/status" element={<Status />} />
