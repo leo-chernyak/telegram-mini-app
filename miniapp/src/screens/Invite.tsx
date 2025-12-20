@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { apiPost } from '../api/client';
 import { Loader } from '../components/Loader';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { Button } from '../components/Button';
+import { Panel, PanelInner } from '../components/Panel';
 import { useToast } from '../components/Toast';
-import { useI18n } from '../app';
+import { useI18n } from '../i18n/context';
+import { copyToClipboard } from '../utils/copy';
 
 type ReferralResp = { ok: true; url: string };
 
@@ -24,35 +26,28 @@ export function Invite() {
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(url);
-      toast.show(t('copied'));
-    } catch {
-      try {
-        const el = document.createElement('textarea');
-        el.value = url;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        el.remove();
-        toast.show(t('copied'));
-      } catch (e) {
-        toast.show((e as Error).message || t('requestFailed'));
-      }
+      await copyToClipboard(url);
+      toast.ok(t('copied'));
+    } catch (e) {
+      toast.error((e as Error).message || t('requestFailed'));
     }
   }
 
   return (
     <div className="stack">
-      <div className="card stack">
-        <h1 className="title">{t('inviteTitle')}</h1>
-        <p className="text">{t('inviteHint')}</p>
-        <div className="divider" />
-        <div className="mono">{url || '—'}</div>
-      </div>
-
-      <PrimaryButton disabled={!url} onClick={copy}>
-        {t('copy')}
-      </PrimaryButton>
+      <Panel>
+        <PanelInner>
+          <h1 className="title">{t('inviteTitle')}</h1>
+          <p className="text">{t('inviteHint')}</p>
+          <div className="divider" />
+          <div className="mono">{url || '—'}</div>
+          <div style={{ marginTop: 12 }}>
+            <Button variant="primary" disabled={!url} onClick={copy}>
+              {t('copy')}
+            </Button>
+          </div>
+        </PanelInner>
+      </Panel>
 
       <Loader visible={loading} />
     </div>

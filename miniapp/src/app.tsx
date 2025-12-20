@@ -1,25 +1,15 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { AppRouter } from './router';
 import { ToastProvider, useToast } from './components/Toast';
 import { apiPost } from './api/client';
-import { createI18n, detectLang, type Lang } from './i18n/i18n';
-
-type I18nApi = ReturnType<typeof createI18n>;
-const I18nContext = createContext<I18nApi | null>(null);
-
-export function useI18n() {
-  const v = useContext(I18nContext);
-  if (!v) throw new Error('I18nContext missing');
-  return v;
-}
+import logoUrl from './logo.png';
+import { I18nProvider, useI18n } from './i18n/context';
+import { HashRouter } from 'react-router-dom';
+import { TopBar } from './components/TopBar';
 
 function AppInner() {
   const toast = useToast();
-
-  const i18n = useMemo(() => {
-    const lang = detectLang() satisfies Lang;
-    return createI18n(lang);
-  }, []);
+  const i18n = useI18n();
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -36,18 +26,35 @@ function AppInner() {
   }, []);
 
   return (
-    <I18nContext.Provider value={i18n}>
-      <div className="container">
-        <AppRouter />
+    <div className="appShell">
+      <div className="fogLayer" />
+      <div className="watermark" style={{ backgroundImage: `url(${logoUrl})` }} />
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        <HashRouter>
+          <TopBar />
+          <AppRouter />
+        </HashRouter>
+        <footer className="footer">
+          <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+            <span>© Tuman</span>
+            <span className="row" style={{ gap: 12 }}>
+              <a href="#/docs">{i18n.t('openDocsNav')}</a>
+              <a href="#/support">{i18n.t('openSupport')}</a>
+              <a href="#/product">{i18n.t('openProduct')}</a>
+            </span>
+          </div>
+        </footer>
       </div>
-    </I18nContext.Provider>
+    </div>
   );
 }
 
 export function App() {
   return (
     <ToastProvider>
-      <AppInner />
+      <I18nProvider>
+        <AppInner />
+      </I18nProvider>
     </ToastProvider>
   );
 }

@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiPost } from '../api/client';
 import { Loader } from '../components/Loader';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { Button } from '../components/Button';
+import { Panel, PanelInner } from '../components/Panel';
 import { useToast } from '../components/Toast';
-import { useI18n } from '../app';
+import { useI18n } from '../i18n/context';
 
 type Plan = 'month' | 'year';
 
@@ -69,63 +70,66 @@ export function Pay() {
 
   return (
     <div className="stack">
-      <div className="card stack">
-        <h1 className="title">{t('choosePlan')}</h1>
+      <Panel>
+        <PanelInner>
+          <h1 className="title">{t('choosePlan')}</h1>
 
-        <div
-          className="radio"
-          data-active={plan === 'month'}
-          onClick={() => setPlan('month')}
-          role="button"
-          tabIndex={0}
-        >
-          <div style={{ flex: 1 }}>
-            <p className="radioTitle">
-              {t('month')} — {t('monthPrice')}
-            </p>
-            <p className="radioSubtitle">199 RUB</p>
+          <div className="stack" style={{ gap: 10 }}>
+            <div className="choice" data-active={plan === 'month'} onClick={() => setPlan('month')} role="button" tabIndex={0}>
+              <div style={{ flex: 1 }}>
+                <p className="choiceTitle">
+                  {t('month')} — {t('monthPrice')}
+                </p>
+                <p className="choiceSubtitle">30 дней</p>
+              </div>
+            </div>
+
+            <div className="choice" data-active={plan === 'year'} onClick={() => setPlan('year')} role="button" tabIndex={0}>
+              <div style={{ flex: 1 }}>
+                <p className="choiceTitle">
+                  {t('year')} — {t('yearPrice')}
+                </p>
+                <p className="choiceSubtitle">365 дней</p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div
-          className="radio"
-          data-active={plan === 'year'}
-          onClick={() => setPlan('year')}
-          role="button"
-          tabIndex={0}
-        >
-          <div style={{ flex: 1 }}>
-            <p className="radioTitle">
-              {t('year')} — {t('yearPrice')}
-            </p>
-            <p className="radioSubtitle">1990 RUB</p>
+          <div className="divider" />
+
+          <label className="row" style={{ alignItems: 'flex-start' }}>
+            <input
+              type="checkbox"
+              checked={docsOk}
+              onChange={(e) => setDocsOk(e.target.checked)}
+              style={{ marginTop: 3 }}
+            />
+            <span className="small">{t('docsAck')}</span>
+          </label>
+
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <a href="#/docs">{t('openDocs')}</a>
+            <span />
           </div>
-        </div>
 
-        <div className="divider" />
+          {!hasTelegramMainButton() ? (
+            <div style={{ marginTop: 12 }}>
+              <Button variant="primary" disabled={!docsOk || loading} loading={loading} onClick={doPay}>
+                {t('payWithTelegram')}
+              </Button>
+            </div>
+          ) : (
+            <p className="small" style={{ marginTop: 10 }}>
+              {t('payWithTelegram')}
+            </p>
+          )}
 
-        <label className="row" style={{ alignItems: 'flex-start' }}>
-          <input
-            type="checkbox"
-            checked={docsOk}
-            onChange={(e) => setDocsOk(e.target.checked)}
-            style={{ marginTop: 3 }}
-          />
-          <span className="small">{t('docsAck')}</span>
-        </label>
-
-        <div className="row" style={{ justifyContent: 'space-between' }}>
-          <a href="#/docs">{t('openDocs')}</a>
-        </div>
-      </div>
-
-      {!hasTelegramMainButton() ? (
-        <PrimaryButton disabled={!docsOk || loading} onClick={doPay}>
-          {t('payWithTelegram')}
-        </PrimaryButton>
-      ) : (
-        <div className="small">{t('payWithTelegram')}</div>
-      )}
+          <div style={{ marginTop: 10 }}>
+            <Button variant="secondary" onClick={() => nav('/status')}>
+              {t('checkStatus')}
+            </Button>
+          </div>
+        </PanelInner>
+      </Panel>
 
       <Loader visible={loading} />
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { useI18n } from '../app';
+import { useI18n } from '../i18n/context';
 
 export function Success() {
   const nav = useNavigate();

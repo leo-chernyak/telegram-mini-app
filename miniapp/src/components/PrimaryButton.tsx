@@ -1,28 +1,11 @@
 import React from 'react';
+import { Button } from './Button';
 
-export function PrimaryButton(props: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-}) {
+export function PrimaryButton(props: { children: React.ReactNode; onClick?: () => void; disabled?: boolean }) {
   return (
-    <button
-      onClick={props.onClick}
-      disabled={props.disabled}
-      style={{
-        width: '100%',
-        border: 'none',
-        borderRadius: 14,
-        padding: '14px 16px',
-        background: props.disabled ? 'rgba(255,255,255,0.10)' : 'var(--accent)',
-        color: props.disabled ? 'rgba(255,255,255,0.55)' : 'var(--accentText)',
-        fontSize: 15,
-        fontWeight: 500,
-        letterSpacing: 0.2
-      }}
-    >
+    <Button variant="primary" onClick={props.onClick} disabled={props.disabled}>
       {props.children}
-    </button>
+    </Button>
   );
 }
 

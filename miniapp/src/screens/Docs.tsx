@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { apiGet } from '../api/client';
 import { Loader } from '../components/Loader';
 import { useToast } from '../components/Toast';
-import { useI18n } from '../app';
+import { useI18n } from '../i18n/context';
+import { Panel, PanelInner } from '../components/Panel';
 
 type DocItem = { id: string; title: string; url: string };
 type DocsResp = { ok: true; docs: DocItem[] };
@@ -24,16 +25,27 @@ export function Docs() {
 
   return (
     <div className="stack">
-      <div className="card stack">
-        <h1 className="title">{t('docsTitle')}</h1>
-        <div className="stack" style={{ gap: 10 }}>
-          {docs.map((d) => (
-            <a key={d.id} href={d.url} target="_blank" rel="noreferrer">
-              {d.title}
-            </a>
-          ))}
-        </div>
-      </div>
+      <Panel>
+        <PanelInner>
+          <h1 className="title">{t('docsPageTitle')}</h1>
+          <div className="stack" style={{ gap: 10, marginTop: 6 }}>
+            <a href="#/docs/terms">{t('docTerms')}</a>
+            <a href="#/docs/privacy">{t('docPrivacy')}</a>
+            <a href="#/docs">{t('docPd')}</a>
+          </div>
+
+          <div className="divider" />
+
+          <p className="small">Ссылки ниже возвращаются backend-ом (MVP):</p>
+          <div className="stack" style={{ gap: 10 }}>
+            {docs.map((d) => (
+              <a key={d.id} href={d.url} target="_blank" rel="noreferrer">
+                {d.title}
+              </a>
+            ))}
+          </div>
+        </PanelInner>
+      </Panel>
       <Loader visible={loading} />
     </div>
   );

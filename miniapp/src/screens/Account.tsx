@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiPost } from '../api/client';
+import { Button } from '../components/Button';
 import { Loader } from '../components/Loader';
+import { Panel, PanelInner } from '../components/Panel';
 import { useToast } from '../components/Toast';
 import { useI18n } from '../i18n/context';
-import { Panel, PanelInner } from '../components/Panel';
-import { Button } from '../components/Button';
 
 type StatusResp = {
   ok: true;
@@ -15,11 +15,10 @@ type StatusResp = {
 };
 
 function formatDate(ms: number) {
-  const d = new Date(ms);
-  return d.toLocaleDateString();
+  return new Date(ms).toLocaleDateString();
 }
 
-export function Status() {
+export function Account() {
   const nav = useNavigate();
   const toast = useToast();
   const { t } = useI18n();
@@ -27,11 +26,18 @@ export function Status() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<StatusResp | null>(null);
 
+  const userId = useMemo(() => {
+    const raw = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  }, []);
+
   useEffect(() => {
     setLoading(true);
     apiPost<StatusResp>('/api/subscription/status', {})
       .then((r) => setData(r))
-      .catch((e) => toast.show((e as Error).message || t('requestFailed')))
+      .catch((e) => toast.error((e as Error).message || t('requestFailed')))
       .finally(() => setLoading(false));
   }, [t, toast]);
 
@@ -40,12 +46,26 @@ export function Status() {
     return formatDate(data.expiresAt);
   }, [data?.expiresAt]);
 
+  function close() {
+    window.Telegram?.WebApp?.close?.();
+  }
+
   return (
     <div className="stack">
       <Panel>
         <PanelInner>
-          <h1 className="title">{t('statusTitle')}</h1>
-          <div className="stack" style={{ gap: 6, marginTop: 8 }}>
+          <h1 className="title">{t('accountTitle')}</h1>
+          <p className="text">{t('accountSub')}</p>
+        </PanelInner>
+      </Panel>
+
+      <Panel>
+        <PanelInner>
+          <div className="stack" style={{ gap: 10 }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="small">Telegram ID</span>
+              <span className="mono">{userId ?? '—'}</span>
+            </div>
             <div className="row" style={{ justifyContent: 'space-between' }}>
               <span className="small">status</span>
               <span className="mono">{data?.status ?? '—'}</span>
@@ -54,18 +74,21 @@ export function Status() {
               <span className="small">{t('expiresAt')}</span>
               <span className="mono">{expires}</span>
             </div>
-          </div>
-
-          <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginTop: 12 }}>
-            <Button variant="primary" onClick={() => nav('/pay')}>
-              {t('renew')}
-            </Button>
-            <Button variant="secondary" onClick={() => nav('/account')}>
-              {t('headerAccount')}
-            </Button>
+            <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+              <Button variant="primary" onClick={() => nav('/pay')}>
+                {t('ctaPay')}
+              </Button>
+              <Button variant="secondary" onClick={() => nav('/status')}>
+                {t('checkStatus')}
+              </Button>
+              <Button variant="tertiary" onClick={close}>
+                {t('close')}
+              </Button>
+            </div>
           </div>
         </PanelInner>
       </Panel>
+
       <Loader visible={loading} />
     </div>
   );

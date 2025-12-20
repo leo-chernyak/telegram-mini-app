@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PrimaryButton } from '../components/PrimaryButton';
-import { useI18n } from '../app';
+import { Button } from '../components/Button';
+import { Panel, PanelInner } from '../components/Panel';
+import { useI18n } from '../i18n/context';
 
 export function Welcome() {
   const nav = useNavigate();
@@ -9,14 +10,20 @@ export function Welcome() {
 
   return (
     <div className="stack">
-      <div className="card">
-        <h1 className="title">{t('welcomeTitle')}</h1>
-        <p className="text">{t('welcomeText')}</p>
-      </div>
+      <Panel>
+        <PanelInner>
+          <h1 className="title">{t('welcomeTitle')}</h1>
+          <p className="text">{t('welcomeText')}</p>
+        </PanelInner>
+      </Panel>
 
-      <div className="stack">
-        <PrimaryButton onClick={() => nav('/pay')}>{t('pay')}</PrimaryButton>
-        <PrimaryButton onClick={() => nav('/status')}>{t('checkStatus')}</PrimaryButton>
+      <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
+        <Button variant="primary" onClick={() => nav('/pay')}>
+          {t('pay')}
+        </Button>
+        <Button variant="secondary" onClick={() => nav('/status')}>
+          {t('checkStatus')}
+        </Button>
       </div>
     </div>
   );
