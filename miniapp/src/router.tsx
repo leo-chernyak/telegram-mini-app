@@ -16,8 +16,8 @@ import { DocPrivacy } from './screens/docs/DocPrivacy';
 export function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/welcome" element={<Landing />} />
+      {/* <Route path="/welcome" element={<Welcome />} /> */}
       <Route path="/pay" element={<Pay />} />
       <Route path="/success" element={<Success />} />
       <Route path="/status" element={<Status />} />
